@@ -1,0 +1,10 @@
+.characterCard {
+    width: 20rem;
+    padding: 1rem 1.25rem;
+    background-color: #333131;
+    border: 1px solid #424141;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
