@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import Character from './Character.tsx'
 import { type CharacterClass } from './Character.tsx'
 import Quest from './Quest.tsx'
 import './App.css'
+import InventoryItem from './InventoryItem.tsx'
+import { type InventoryItemProps } from './InventoryItem.tsx'
 
 function App() {
   const [playerName, setPlayerName] = useState("Player")
@@ -11,6 +13,10 @@ function App() {
   const [playerTitle, setPlayerTitle] = useState<string | null>(null)
   const [startingHealth, setStartingHealth] = useState(100)
   const [currentHealth, setCurrentHealth] = useState(startingHealth)
+  const [inventory, setInventory] = useState<InventoryItemProps[]>([])
+  const [inventoryItemName, setInventoryItemName] = useState("")
+  const [inventoryItemValue, setInventoryItemValue] = useState(0)
+  const [inventoryItemDescription, setInventoryItemDescription] = useState("")
 
   function reset() {
     setPlayerName("Player")
@@ -18,6 +24,18 @@ function App() {
     setPlayerLevel(1)
     setPlayerTitle(null)
     setCurrentHealth(startingHealth)
+  }
+
+  function addToInventory(name: string, value: number, description: string) {
+
+    setInventory(() => [
+      ...inventory,
+      {
+        name: name,
+        value: value,
+        description: description
+      }
+    ])
   }
 
   // This runs when currentHealth changes
@@ -39,11 +57,11 @@ function App() {
         <option value={"Paladin"}>Paladin</option>
       </select>
       <label>Level:</label>
-      <input datatype='number' onChange={(event) => setPlayerLevel(Number(event.target.value))} placeholder='Player Level'></input>
+      <input type='number' onChange={(event) => setPlayerLevel(Number(event.target.value))} placeholder='Player Level'></input>
       <label>Title:</label>
       <input onChange={(event) => setPlayerTitle(event.target.value)} placeholder='Player Title'></input>
       <label>Starting Health:</label>
-      <input datatype="number" onChange={(event) => { setStartingHealth(Number(event.target.value)); setCurrentHealth(Number(event.target.value)) }} placeholder='Starting Health'></input>
+      <input type="number" onChange={(event) => { setStartingHealth(Number(event.target.value)); setCurrentHealth(Number(event.target.value)) }} placeholder='Starting Health'></input>
       <br />
       <br />
       <br />
@@ -74,6 +92,20 @@ function App() {
         difficulty='Easy'
         reward={50}
         completed={false} />
+      <br />
+      <br />
+      <br />
+      <input onChange={(event) => setInventoryItemName(event.target.value)} placeholder='Item Name'></input>
+      <input type='number' onChange={(event) => setInventoryItemValue(Number(event.target.value))} placeholder='Item Value'></input>
+      <input onChange={(event) => setInventoryItemDescription(event.target.value)} placeholder='Item Description'></input>
+      <button onClick={() => addToInventory(inventoryItemName, inventoryItemValue, inventoryItemDescription)}>Add To Inventory</button>
+      {inventory.map((item) => (
+        <InventoryItem
+          name={item.name}
+          value={item.value}
+          description={item.description}
+        />
+      ))}
     </>
   )
 }
