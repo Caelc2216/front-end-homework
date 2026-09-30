@@ -16,7 +16,7 @@ type CharacterClass = "Barbarian" | "Ranger" | "Wizard" | "Paladin"
 
 type CharacterProps = {
     name: string;
-    title?: string
+    title?: string | null;
     class: CharacterClass;
     level: number
     health: number
