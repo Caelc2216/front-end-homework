@@ -2,7 +2,7 @@ function Character(props: CharacterProps){
 
     return (
         <>
-            <h1>Name: {props.name}</h1>
+            <h3>Name: {props.name}</h3>
             <p>Class: {props.class}</p>
             <p>Level: {props.level}</p>
             <p>Health: {props.health}</p>
