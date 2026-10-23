@@ -43,10 +43,10 @@ function App() {
   return (
     <>
       <h2>Add a Character</h2>
-      <div>
+      <form onSubmit={(event) => { event.preventDefault(); addCharacter() }}>
         <div>
           <label className='i_label'>Character Name:</label>
-          <input onChange={(event) => setCharacterName(event.target.value)} placeholder={characterName}/>
+          <input onChange={(event) => setCharacterName(event.target.value)} placeholder={characterName} required />
         </div>
         <div>
           <label className='i_label'>Class:</label>
@@ -69,8 +69,8 @@ function App() {
           <label className='i_label'>Mana:</label>
           <input onChange={(event) => setCharacterMana(event.target.valueAsNumber)} type="number" placeholder="1" />
         </div>
-        <button onClick={() => addCharacter() }>Add Character</button>
-      </div>
+        <button type="submit">Add Character</button>
+      </form>
       <h2>Characters</h2>
       {characters && [...characters].reverse().map((c) =>
       (
