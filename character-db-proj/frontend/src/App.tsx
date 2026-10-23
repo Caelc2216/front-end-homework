@@ -72,7 +72,7 @@ function App() {
         <button onClick={() => addCharacter() }>Add Character</button>
       </div>
       <h2>Characters</h2>
-      {characters?.map((c) =>
+      {characters && [...characters].reverse().map((c) =>
       (
         <Character key={c.id} name={c.name} class={c.class} health={c.health} level={c.level} mana={c.mana} />
       ))}
