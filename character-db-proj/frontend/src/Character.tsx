@@ -19,5 +19,8 @@ type CharacterProps = {
     mana: number
 }
 
+type CharacterData = CharacterProps & { id: string }
+
 export default Character
 export {type CharacterProps}
+export {type CharacterData}
