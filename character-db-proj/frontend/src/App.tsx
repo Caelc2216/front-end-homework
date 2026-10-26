@@ -43,14 +43,14 @@ function App() {
   }
 
   async function updateCharacter(c_id: string, updatedCharacter: CharacterProps) {
-    const response = await fetch(`${API_URL}/api/Characters`, {
+    const response = await fetch(`${API_URL}/api/Characters/${c_id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedCharacter)
+      body: JSON.stringify({ ...updatedCharacter, id: c_id })
     })
 
-    const body = await response.json()
     if (!response.ok) {
+      const body = await response.json()
       alert(`update failed: ${body.error}`)
       throw new Error(`update failed: ${body.error}`)
     }
@@ -58,6 +58,7 @@ function App() {
       setCharacters(prev =>
         prev?.map((c) => (c.id === c_id ? { ...c, ...updatedCharacter } : c)) ?? null
       )
+      setEditingID("")
     }
   }
 
@@ -77,6 +78,8 @@ function App() {
     }
     return (
       <>
+        <br></br>
+        <br></br>
         <div>
           <label className='i_label'>Name:</label>
           <input onChange={(event) => setUpdatedName(event?.target.value)} defaultValue={character.name} />
@@ -92,17 +95,22 @@ function App() {
         </div>
         <div>
           <label className='i_label'>Level:</label>
-          <input onChange={(event) => setUpdatedLevel(event?.target.valueAsNumber)} value={character.level} type='number' />
+          <input onChange={(event) => setUpdatedLevel(event?.target.valueAsNumber)} defaultValue={character.level} type='number' />
         </div>
         <div>
           <label className='i_label'>Health:</label>
-          <input onChange={(event) => setUpdatedHealth(event?.target.valueAsNumber)} value={character.health} type='number' />
+          <input onChange={(event) => setUpdatedHealth(event?.target.valueAsNumber)} defaultValue={character.health} type='number' />
         </div>
         <div>
           <label className='i_label'>Mana:</label>
-          <input onChange={(event) => setUpdatedMana(event?.target.valueAsNumber)} value={character.mana} type='number' />
+          <input onChange={(event) => setUpdatedMana(event?.target.valueAsNumber)} defaultValue={character.mana} type='number' />
         </div>
-        <button onClick={() => updateCharacter(character.id, newCharacter)}>Update Character</button>
+        <div>
+          <button style={{ margin: "1rem" }} onClick={() => setEditingID("")}>Cancel</button>
+          <button style={{ margin: "1rem" }} onClick={() => updateCharacter(character.id, newCharacter)}>Update</button>
+        </div>
+        <br></br>
+        <br></br>
       </>
     )
   }
@@ -139,6 +147,9 @@ function App() {
         </div>
         <button type="submit">Add Character</button>
       </form>
+      <br></br>
+      <br></br>
+      <br></br>
       <h2>Characters</h2>
       {characters && [...characters].reverse().map((c) =>
       (
