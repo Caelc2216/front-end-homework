@@ -14,15 +14,28 @@ function App() {
   const [characterLevel, setCharacterLevel] = useState(1)
   const [characterMana, setCharacterMana] = useState(1)
   const [editingID, setEditingID] = useState("")
+  const validClasses: string[] = ["Warrior", "Mage", "Rogue", "Archer"]
 
   useEffect(() => {
     async function getCharacters() {
       const response = await fetch(`${API_URL}/api/Characters`)
-      const data: CharacterData[] = await response.json()
-      setCharacters(data)
+      if (!response.ok) {
+        const body = await response.json()
+        alert(`failed to get characters: ${getErrorMessage(body)}`)
+      }
+      else {
+        const data: CharacterData[] = await response.json()
+        setCharacters(data)
+      }
     }
     getCharacters()
   }, [])
+
+function getErrorMessage(body: any): string {
+  if (body?.error) return body.error
+  if (body?.errors) return Object.values(body.errors).flat().join(" ")
+  return body?.title ?? "Unknown error"
+}
 
   async function addCharacter() {
     const newCharacter: CharacterProps = { name: characterName, class: characterClass, health: characterHealth, level: characterLevel, mana: characterMana }
@@ -34,8 +47,8 @@ function App() {
 
     const body = await response.json()
     if (!response.ok) {
-      alert(`Creation failed: ${body.error}`)
-      throw new Error(`Creation Failed: ${body.error}`)
+      alert(`Creation failed: ${getErrorMessage(body)}`)
+      throw new Error(`Creation Failed: ${getErrorMessage(body)}`)
     }
 
     const created: CharacterData = body
@@ -51,8 +64,8 @@ function App() {
 
     if (!response.ok) {
       const body = await response.json()
-      alert(`update failed: ${body.error}`)
-      throw new Error(`update failed: ${body.error}`)
+      alert(`update failed: ${getErrorMessage(body)}`)
+      throw new Error(`update failed: ${getErrorMessage(body)}`)
     }
     else {
       setCharacters(prev =>
@@ -76,10 +89,12 @@ function App() {
       mana: updatedMana
 
     }
+
     return (
       <>
         <br></br>
         <br></br>
+
         <div>
           <label className='i_label'>Name:</label>
           <input onChange={(event) => setUpdatedName(event?.target.value)} defaultValue={character.name} />
@@ -91,6 +106,7 @@ function App() {
             <option value="Mage">Mage</option>
             <option value="Rogue">Rogue</option>
             <option value="Archer">Archer</option>
+            {!validClasses.includes(classSelection) && <option value={classSelection}>{classSelection}</option>}
           </select>
         </div>
         <div>
@@ -106,7 +122,7 @@ function App() {
           <input onChange={(event) => setUpdatedMana(event?.target.valueAsNumber)} defaultValue={character.mana} type='number' />
         </div>
         <div>
-          <button style={{ margin: "1rem" }} onClick={() => setEditingID("")}>Cancel</button>
+          <button style={{ margin: "1rem", backgroundColor: "red" }} onClick={() => setEditingID("")}>Cancel</button>
           <button style={{ margin: "1rem" }} onClick={() => updateCharacter(character.id, newCharacter)}>Update</button>
         </div>
         <br></br>
@@ -115,6 +131,21 @@ function App() {
     )
   }
 
+  async function deleteCharacter(c_id: string) {
+    const response = await fetch(`${API_URL}/api/Characters/${c_id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" }
+    })
+
+    if (!response.ok) {
+      const body = await response.json()
+      alert(`deletion failed: ${getErrorMessage(body)}`)
+      throw new Error(`deletion failed: ${getErrorMessage(body)}`)
+    }
+    else {
+      setCharacters((prev) => prev?.filter(c => c.id != c_id) ?? null)
+    }
+  }
 
   return (
     <>
@@ -151,11 +182,15 @@ function App() {
       <br></br>
       <br></br>
       <h2>Characters</h2>
+      {characters == null && <p>Loading...</p>}
       {characters && [...characters].reverse().map((c) =>
       (
         <>
           <Character key={c.id} name={c.name} class={c.class} health={c.health} level={c.level} mana={c.mana} />
-          <button onClick={() => setEditingID(c.id)}>Edit Character</button>
+          <div>
+            <button style={{ margin: "1rem" }} onClick={() => setEditingID(c.id)}>Edit Character</button>
+            <button style={{ margin: "1rem", backgroundColor: "red" }} onClick={() => deleteCharacter(c.id)}>Delete</button>
+          </div>
           {editingID == c.id && <EditCharacter character={c}></EditCharacter>}
         </>
       ))}
